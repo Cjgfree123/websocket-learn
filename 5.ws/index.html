@@ -12,7 +12,7 @@
     <div id="block"></div>
 </body>
 <script>
-    let socket = new WebSocket("ws://localhost:8888"); // 协议名: ws
+    let socket = new WebSocket("ws://localhost:9999"); // 协议名: ws
     socket.onopen = function() {
         console.log("1. 客户端连接上了服务器");
         socket.send("3. 你好");

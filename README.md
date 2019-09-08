@@ -7,8 +7,10 @@
 3. iframe
 4. EventSource
 5. websocket
+   
+   *app.js*
     * 使用
-        (1) 注意: 端口一致
+        (1) 注意: socket端口一致8888, 服务端口3000
         ```
             let socket = new WebSocket("ws://localhost:8888"); // 协议名: ws
             let server = new WebSockerServer({ port:8888 });
@@ -30,5 +32,13 @@
         6. 客户端拿到服务端发来的消息
         ```
 
+    *app2.js*
+
+        (1) socket端口9999, 服务端口3000
+        (2) 需要双终端，app.js(服务端口) + app2.js(socket)
+
+        ps:实现思路
+        先匹配 Upgrade 字段，如果成功匹配，说明: 需要升级切换协议。 然后判断Sec-WebSocket-Version等于13的话，利用Sec-WebSocket-Key计算出accept值，作为返回的 响应头。返回给客户端。
+        
     * 算法原理
     
