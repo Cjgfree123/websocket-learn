@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="block"></div>
+</body>
+<script>
+    let block = document.querySelector("#block");
+    let eventSource = new EventSource("/block");
+    // 监听服务器发过来的消息
+    eventSource.onmessage = function(event){
+        let message = event.data;
+        block.innerHTML = message;
+    }
+    eventSource.onopen=function(event){
+        console.log("onopen", event.data);
+    }
+    // 监听连接失败的错误事件
+    eventSource.onerror = function(err){
+        console.log("err", err);
+    };
+</script>
+
+</html>
