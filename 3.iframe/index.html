@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="block" style="border: 2px solid pink; height: 200px;"></div>
+    <iframe src="/block" frameborder="0" style="height:0; border:0;"></iframe>
+</body>
+<script>
+   // 此处类似于window
+   // 调用: 在子窗口iframe里边，调用父窗口的方法setTime
+   function setTime(ts){
+       document.querySelector("#block").innerHTML = ts;
+   }
+</script>
+
+</html>
