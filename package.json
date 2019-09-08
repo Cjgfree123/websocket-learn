@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/Cjgfree123/websocket-learn/issues"
   },
-  "homepage": "https://github.com/Cjgfree123/websocket-learn#readme"
+  "homepage": "https://github.com/Cjgfree123/websocket-learn#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^1.19.2"
+  }
 }
