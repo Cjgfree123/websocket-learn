@@ -13,16 +13,18 @@
 </body>
 <script>
     let clock = document.querySelector("#block");
-    setInterval(() => {
+    function send(){
         let xhr = new XMLHttpRequest;
         xhr.open("GET", "/clock", true);
         xhr.onreadystatechange = function(){
             if(xhr.readyState == 4 && xhr.status == 200){
                 clock.innerHTML = xhr.responseText;
+                send();
             };
         };
         xhr.send();
-    }, 1000);
+    };
+    send();
 </script>
 
 </html>
