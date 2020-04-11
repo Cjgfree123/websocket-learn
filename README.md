@@ -122,3 +122,41 @@ io.on("connection", function(socket){
             });
         });
         ```
+
+    <3> 如何保证消息，仅仅给别人看，主动发送的人看不到(即: 向除了自己之外的所有人进行广播)。
+
+    ```
+     socket.broadcast.emit("message", func);
+    ```
+
+    <4> 私聊(首先实现用户名@效果, @之后即可开启私聊)
+
+    app.js
+
+    ```
+    // 第一个分组代表非空格,指用户名; 第二个分组指消息。
+    let result = content.match(/@([^ ]+)(.+)/);
+    // 如果匹配则是私聊
+    if(result){
+        let toUser = result[1]; // 用户名
+        let toContent = result[2]; // 消息
+        let toSocket = sockets[toUser];
+        toSocket && toSocket.emit("message", getMsg(toContent, username));
+
+    }else{
+        // 公聊
+        io.emit("message", getMsg(content, username));
+    }
+    ```
+
+    <5> 如果用户名已经设置过了的话，则提示: "已经被占用, 请换一个用户名".
+
+    app.js
+
+    ```
+    // 如果说，用户名没有设置过的话
+    let oldSocket = sockets[content];
+    if(oldSocket){
+        socket.emit("message", getMsg(`${content}已经被占用, 请换一个用户名! `));
+    }
+    ```

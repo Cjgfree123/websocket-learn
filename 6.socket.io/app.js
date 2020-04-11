@@ -7,6 +7,7 @@ let server = require("http").createServer(app);
 let io = require("socket.io")(server);
 
 let SYSTEM = "系统";
+let sockets = {};
 
 // 监听客户端的连接事件，当客户端连接上来后，执行回调函数
 // 默认路径 io("/") 即: io.on("connection", func()) 是io.of("/").on("connection", func())的简写
@@ -17,15 +18,35 @@ io.on("connection", function(socket){
             /**
              * step2 用户的正常消息
              */
-            io.emit("message", getMsg(content, username));
+            // 第一个分组代表非空格,指用户名; 第二个分组指消息。
+            let result = content.match(/@([^ ]+)(.+)/);
+            // 如果匹配则是私聊
+            if(result){
+                let toUser = result[1]; // 用户名
+                let toContent = result[2]; // 消息
+                let toSocket = sockets[toUser];
+                toSocket && toSocket.emit("message", getMsg(toContent, username));
+
+            }else{
+                // 公聊
+                io.emit("message", getMsg(content, username));
+            }
         }else{
             /**
              * step1 将消息的内容, 设置为当前用户的用户名
              */
-            // 把这个消息的内容, 设置为当前用户的用户名
-            username = content;
-            // 告诉所有的客户端，有新的用户加入了聊天室.
-            io.emit("message", getMsg(`${username}加入聊天室`));
+            // 如果说，用户名没有设置过的话
+            let oldSocket = sockets[content];
+            if(oldSocket){
+                socket.emit("message", getMsg(`${content}已经被占用, 请换一个用户名! `));
+            }else{
+                // 把这个消息的内容, 设置为当前用户的用户名
+                username = content;
+                // 把用户名和对应的socket对象进行关联
+                sockets[username] = socket;
+                // 告诉所有的客户端，有新的用户加入了聊天室.
+                socket.broadcast.emit("message", getMsg(`${username}加入聊天室`));
+            };
         };
     });
 });

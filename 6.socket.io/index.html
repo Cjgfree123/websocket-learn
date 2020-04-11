@@ -10,6 +10,12 @@
         crossorigin="anonymous">
     <script src="http://cdn.staticfile.org/moment.js/2.24.0/moment.js"></script>
     <title>聊天室</title>
+    <style>
+        .user {
+            color: green;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,7 +27,7 @@
                         <h2 class="text-center">欢迎光临聊天室</h2>
                     </div>
                     <div class="panel-body">
-                        <ul class="list-group" id="messageList">
+                        <ul onclick="clickUser(event)" class="list-group" id="messageList">
 
                         </ul>
                     </div>
@@ -56,24 +62,32 @@
     socket.on("message", function (msgObj) {
         // io.emit("message", content);
         let li = document.createElement("li");
-        li.innerHTML = `${msgObj.username}:${msgObj.content}<span class="pull-right">${moment(msgObj.createdAt).fromNow()}</span>`;
+        li.innerHTML = `<span class="user">${msgObj.username}</span>:${msgObj.content}<span class="pull-right">${moment(msgObj.createdAt).fromNow()}</span>`;
         li.className = "list-group-item";
         messageList.appendChild(li);
     });
 
-    function handleKeyUp(event){
-        if(event.keyCode * 1 === 13){
+    function handleKeyUp(event) {
+        if (event.keyCode * 1 === 13) {
             sendMsg();
         }
     }
 
     function sendMsg() {
         let content = textMsg.value;
-        if(!content){
+        if (!content) {
             alert("消息不允许为空~");
-        }else{
+        } else {
             socket.send(content);
             textMsg.value = "";
+        }
+    }
+
+    function clickUser(event) {
+        // 点击用户名，input内内容变成 @用户名
+        if (event.target.className === "user") {
+            // 注意: @后面必须有空格，方便和后面进行隔断。 在app.js里，利用正则获取对应信息。
+            textMsg.value = `@ ${event.target.innerText}`;
         }
     }
 
