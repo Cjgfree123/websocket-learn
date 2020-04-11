@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container" style="margin-top: 30px;">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
@@ -20,16 +20,16 @@
                         <h2 class="text-center">欢迎光临聊天室</h2>
                     </div>
                     <div class="panel-body">
-                        <ul class="list-group">
+                        <ul class="list-group" id="messageList">
 
                         </ul>
                     </div>
                     <div class="panel-footer">
                         <div class="row">
-                            <div class="col-md-11">
+                            <div class="col-md-10">
                                 <input id="textMsg" type="text" class="form-control">
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <button onclick="sendMsg()" id="sendBtn" class="btn btn-primary">发言</button>
                             </div>
                         </div>
@@ -47,31 +47,24 @@
 <script>
     let content = document.querySelector("#content");
     let sendBtn = document.querySelector("#sendBtn");
+    let messageList = document.querySelector("#messageList");
 
     let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
-    socket.on("connect", function () {
-        console.log("连接成功");
-        /**
-         * socket.send 是 socket.emit("message","hello")的语法糖
-         * 优点: (1)更语义化 (2)更短(比如少写 message)
-         * ps: message只是通信方式中的一种
-         */
-        socket.send("hello");
-    });
 
     // 监听服务器返回的消息
-    socket.on("message", function (message) {
-        console.log(message);
+    socket.on("message", function (content) {
+        // io.emit("message", content);
+        let li = document.createElement("li");
+        li.innerHTML = content;
+        li.className = "list-group-item";
+        messageList.appendChild(li);
     });
 
     function sendMsg(message) {
         let content = textMsg.value;
         socket.send(content);
+        textMsg.value = "";
     }
-
-    socket.on("disconnect", function () {
-        console.log("连接失败");
-    });
 </script>
 
 </html>

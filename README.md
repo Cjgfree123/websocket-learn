@@ -44,3 +44,31 @@
     
 6. socket.io
 
+(1) 基本流程
+
+```
+let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
+
+socket.on("connect", function () {
+    console.log("连接成功");
+    /**
+        * socket.send 是 socket.emit("message","hello")的语法糖
+        * 优点: (1)更语义化 (2)更短(比如少写 message)
+        * ps: message只是通信方式中的一种
+        */
+    socket.send("hello");
+});
+
+// 监听服务器返回的消息
+socket.on("message", function (content) {
+    // io.emit("message", content);
+    let li = document.createElement("li");
+    li.innerHTML = content;
+    li.className = "list-group-item";
+    messageList.appendChild(li);
+});
+
+socket.on("disconnect", function () {
+    console.log("连接失败");
+});
+```
