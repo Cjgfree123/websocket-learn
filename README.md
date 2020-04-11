@@ -44,8 +44,9 @@
     
 6. socket.io
 
-(1) 基本流程
+(1) 通信的基本流程
 
+index.html 客户端
 ```
 let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
 
@@ -72,3 +73,52 @@ socket.on("disconnect", function () {
     console.log("连接失败");
 });
 ```
+
+app.js 服务器端
+
+```
+let server = require("http").createServer(app);
+// server(属于必须)用于返回数据, socket用于实时通信
+let io = require("socket.io")(server);
+
+// 监听客户端的连接事件，当客户端连接上来后，执行回调函数
+// 默认路径 io("/") 即: io.on("connection", func()) 是io.of("/").on("connection", func())的简写
+io.on("connection", function(socket){
+    console.log("服务器接收到客户端的连接");
+    socket.on("message", function(message){
+        console.log(message);
+
+        // 服务器读取到客户端的消息, 并给消息加上前缀"服务器说".
+        socket.send("服务器说:" + message);
+    })
+})
+```
+
+(2)需求描述
+
+    <1> 客户端发消息，服务端将客户端传递过来的消息，进行广播（展示在浏览器中）;  体验优化(enter键入，消息不为空)
+
+    <2> 将消息按照不同用户，进行区分(即: 用户输入的第一条消息，作为用户名。之后的消息，作为聊天记录)
+
+        ```
+        // 可以开双浏览器, 分别进行访问localhost:3000, 模拟用户第一次进入聊天室并发言。
+        io.on("connection", function(socket){
+            let username;
+            socket.on("message", function(content) {
+                if(username){
+                    /**
+                    * step2 用户的正常消息
+                    */
+                    io.emit("message", getMsg(content, username));
+                }else{
+                    /**
+                    * step1 将消息的内容, 设置为当前用户的用户名
+                    */
+                    // 把这个消息的内容, 设置为当前用户的用户名
+                    username = content;
+                    // 告诉所有的客户端，有新的用户加入了聊天室.
+                    io.emit("message", getMsg(`${username}加入聊天室`));
+                };
+            });
+        });
+        ```

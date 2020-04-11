@@ -8,6 +8,7 @@
     <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
         crossorigin="anonymous">
+    <script src="http://cdn.staticfile.org/moment.js/2.24.0/moment.js"></script>
     <title>聊天室</title>
 </head>
 
@@ -27,7 +28,7 @@
                     <div class="panel-footer">
                         <div class="row">
                             <div class="col-md-10">
-                                <input id="textMsg" type="text" class="form-control">
+                                <input onkeyup="handleKeyUp(event)" id="textMsg" type="text" class="form-control">
                             </div>
                             <div class="col-md-2">
                                 <button onclick="sendMsg()" id="sendBtn" class="btn btn-primary">发言</button>
@@ -52,19 +53,30 @@
     let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
 
     // 监听服务器返回的消息
-    socket.on("message", function (content) {
+    socket.on("message", function (msgObj) {
         // io.emit("message", content);
         let li = document.createElement("li");
-        li.innerHTML = content;
+        li.innerHTML = `${msgObj.username}:${msgObj.content}<span class="pull-right">${moment(msgObj.createdAt).fromNow()}</span>`;
         li.className = "list-group-item";
         messageList.appendChild(li);
     });
 
-    function sendMsg(message) {
-        let content = textMsg.value;
-        socket.send(content);
-        textMsg.value = "";
+    function handleKeyUp(event){
+        if(event.keyCode * 1 === 13){
+            sendMsg();
+        }
     }
+
+    function sendMsg() {
+        let content = textMsg.value;
+        if(!content){
+            alert("消息不允许为空~");
+        }else{
+            socket.send(content);
+            textMsg.value = "";
+        }
+    }
+
 </script>
 
 </html>
