@@ -136,6 +136,17 @@
         leaveBtn.style.display = "inline-block";
     });
 
+    function leave(roomName) {
+        socket.emit("leaved", roomName);
+    }
+
+    socket.on("leave", function(roomName) {
+        let joinBtn = document.querySelector("#join" + roomName);
+        let leaveBtn = document.querySelector("#leave" + roomName);
+        joinBtn.style.display = "inline-block";
+        leaveBtn.style.display = "none";
+    })
+
 </script>
 
 </html>

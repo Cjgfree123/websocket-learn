@@ -36,6 +36,15 @@ io.on("connection", function(socket){
         }
     });
 
+    socket.on("leaved", function(roomName){
+        let index = rooms.indexOf(roomName);
+        if(index != -1){
+            rooms.splice(index, 1);
+            socket.leave(roomName);
+            socket.emit("leave", roomName);
+        }
+    });
+
     socket.on("message", async function(content) {
         if(username){
             /**
@@ -55,7 +64,6 @@ io.on("connection", function(socket){
                 // 房间内
                 if(rooms.length > 0){
                     rooms.forEach(room => {
-                        console.log("room", room);
                         io.in(room).emit("message",savedMessage);
                     })
                 }else{
