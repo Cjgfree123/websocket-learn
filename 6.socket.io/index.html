@@ -58,11 +58,26 @@
 
     let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
 
+    // step1 初始时，从持久化数据中，读取所有的聊天记录。
+    socket.on("connect", function(){
+        socket.emit("getAllMessages");
+    });
+
+    function getMessage(msgObj){
+        return `<span class="user">${msgObj.username}</span>:${msgObj.content}<span class="pull-right">${moment(msgObj.createdAt).fromNow()}</span>`;
+    }
+
+    // step2 拼接成html
+    socket.on("allMessages", function(messages){
+       let html = messages.map(msgObj => `<li class="list-group-item">${getMessage(msgObj)}</li>`).join('');
+       messageList.innerHTML = html;
+    });
+
     // 监听服务器返回的消息
     socket.on("message", function (msgObj) {
         // io.emit("message", content);
         let li = document.createElement("li");
-        li.innerHTML = `<span class="user">${msgObj.username}</span>:${msgObj.content}<span class="pull-right">${moment(msgObj.createdAt).fromNow()}</span>`;
+        li.innerHTML = getMessage(msgObj);
         li.className = "list-group-item";
         messageList.appendChild(li);
     });

@@ -15,6 +15,17 @@ let sockets = {};
 // 默认路径 io("/") 即: io.on("connection", func()) 是io.of("/").on("connection", func())的简写
 io.on("connection", function(socket){
     let username;
+
+    socket.on("getAllMessages", async function(){
+        // 按照时间降序，返回最近的20条
+        let messages = await Message.find().sort({
+            create: -1
+        })
+        .limit(10);
+        messages.reverse();
+        socket.emit("allMessages", messages);
+    });
+
     socket.on("message", async function(content) {
         if(username){
             /**
