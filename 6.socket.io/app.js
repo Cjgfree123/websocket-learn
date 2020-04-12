@@ -15,6 +15,7 @@ let sockets = {};
 // 默认路径 io("/") 即: io.on("connection", func()) 是io.of("/").on("connection", func())的简写
 io.on("connection", function(socket){
     let username;
+    let rooms = []; // 代表此客户端进入的房间的所有房间
 
     socket.on("getAllMessages", async function(){
         // 按照时间降序，返回最近的20条
@@ -24,6 +25,15 @@ io.on("connection", function(socket){
         .limit(10);
         messages.reverse();
         socket.emit("allMessages", messages);
+    });
+
+    socket.on("join", function(roomName) {
+        let index = rooms.indexOf(roomName);
+        if(index == -1){
+            rooms.push(roomName);
+            socket.join(roomName);
+            socket.emit("joined", roomName);
+        }
     });
 
     socket.on("message", async function(content) {

@@ -25,9 +25,19 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h2 class="text-center">欢迎光临聊天室</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button class="btn btn-danger" id="joinRed" onclick="join('Red')">进入红房间</button>
+                                <button style="display:none;" class="btn btn-danger" id="leaveRed" onclick="leave('Red')">离开红房间</button>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-success" id="joinGreen" onclick="join('Green')">进入绿房间</button>
+                                <button style="display:none;" class="btn btn-success" id="leaveGreen" onclick="leave('Green')">离开绿房间</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-body">
-                        <ul onclick="clickUser(event)" class="list-group" id="messageList">
+                        <ul style="height: 300px; overflow-y: scroll;" onclick="clickUser(event)" class="list-group" id="messageList">
 
                         </ul>
                     </div>
@@ -55,6 +65,9 @@
     let content = document.querySelector("#content");
     let sendBtn = document.querySelector("#sendBtn");
     let messageList = document.querySelector("#messageList");
+  
+    let joinGreen = document.querySelector("#joinGreen");
+    let leaveGreen = document.querySelector("#leaveGreen");
 
     let socket = io.connect("/"); // "/"不是根路径，而是命名空间。
 
@@ -71,6 +84,8 @@
     socket.on("allMessages", function(messages){
        let html = messages.map(msgObj => `<li class="list-group-item">${getMessage(msgObj)}</li>`).join('');
        messageList.innerHTML = html;
+       // 初始刷新时，自动滚动到消息列表的最底部
+       messageList.scrollTop = 300;
     });
 
     // 监听服务器返回的消息
@@ -80,6 +95,8 @@
         li.innerHTML = getMessage(msgObj);
         li.className = "list-group-item";
         messageList.appendChild(li);
+        // 当发送新消息时，自动滚到到底部.
+        messageList.scrollTop = 300;
     });
 
     function handleKeyUp(event) {
@@ -105,6 +122,19 @@
             textMsg.value = `@ ${event.target.innerText}`;
         }
     }
+
+    // 加入某个房间
+    function join(roomName){
+        // 告诉服务器，让我的服务器端对应的socket进入到某个房间里
+        socket.emit("join", roomName);
+    }
+
+    socket.on("joined", function(roomName){
+        let joinBtn = document.querySelector("#join" + roomName);
+        let leaveBtn = document.querySelector("#leave" + roomName);
+        joinBtn.style.display = "none";
+        leaveBtn.style.display = "inline-block";
+    });
 
 </script>
 
