@@ -85,7 +85,7 @@
        let html = messages.map(msgObj => `<li class="list-group-item">${getMessage(msgObj)}</li>`).join('');
        messageList.innerHTML = html;
        // 初始刷新时，自动滚动到消息列表的最底部
-       messageList.scrollTop = 300;
+       messageList.scrollTop = 500;
     });
 
     // 监听服务器返回的消息
@@ -96,7 +96,7 @@
         li.className = "list-group-item";
         messageList.appendChild(li);
         // 当发送新消息时，自动滚到到底部.
-        messageList.scrollTop = 300;
+        messageList.scrollTop = 500;
     });
 
     function handleKeyUp(event) {

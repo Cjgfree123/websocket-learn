@@ -52,8 +52,17 @@ io.on("connection", function(socket){
 
             }else{
                 let savedMessage = await Message.create(getMsg(content, username));
-                // 公聊
-                io.emit("message", savedMessage);
+                // 房间内
+                if(rooms.length > 0){
+                    rooms.forEach(room => {
+                        console.log("room", room);
+                        io.in(room).emit("message",savedMessage);
+                    })
+                }else{
+                    // 如果在大厅说话，则所有的人都能听到，包括其他大厅的人和所有房间的人
+                    let savedMessage = await Message.create(getMsg(content, username));
+                    io.emit("message", savedMessage);
+                }
             }
         }else{
             /**
