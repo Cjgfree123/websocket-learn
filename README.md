@@ -1,11 +1,33 @@
 # websocket learn
 
-## 遇到问题并解决
+## 遇到问题并解决 
 
 1. 小火箭并不会自动匹配 域名:端口。
 
     需要自己开启时，重新进行编辑。
 
+
+## 收获
+
+#### 消息广播
+
+1. 全局广播
+
+```
+io.emit("message", "全局消息")
+```
+
+2. 向除了自己之外的所哟人进行广播
+
+```
+    socket.broadcast.emit("message", func);
+```
+
+3. 在房间内进行广播
+
+```
+    io.in(room).emit("message",savedMessage);
+```
 
 ## 内容
 
@@ -179,6 +201,14 @@ io.on("connection", function(socket){
         * [房间]
 
             如果在大厅说话，则所有的人都能听到，包括其他大厅的人和所有房间的人.
+
+                ```
+                // 进入chat房间
+                socket.join("chat")
+
+                // 离开chat房间
+                socket.leave("chat")
+                ```
 
             如果在房间内说话，则房间内的人，都可以听到。
 
