@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Cjgfree123/websocket-learn#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^5.9.7",
     "nodemon": "^1.19.2"
   }
 }

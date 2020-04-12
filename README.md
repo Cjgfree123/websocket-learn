@@ -1,5 +1,9 @@
 # websocket learn
 
+## 遇到问题并解决
+
+1. 小火箭并不会自动匹配 域名:端口，需要自己开启时，重新进行编辑。
+
 ## 内容
 
 1. 轮询 (例子: 1.query.js)
@@ -160,3 +164,5 @@ io.on("connection", function(socket){
         socket.emit("message", getMsg(`${content}已经被占用, 请换一个用户名! `));
     }
     ```
+
+    <6> 数据持久化

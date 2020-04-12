@@ -1,3 +1,5 @@
+let { Message } = require('./db');
+
 let express = require("express");
 let app = express();
 app.use(express.static(__dirname));
@@ -13,7 +15,7 @@ let sockets = {};
 // 默认路径 io("/") 即: io.on("connection", func()) 是io.of("/").on("connection", func())的简写
 io.on("connection", function(socket){
     let username;
-    socket.on("message", function(content) {
+    socket.on("message", async function(content) {
         if(username){
             /**
              * step2 用户的正常消息
@@ -28,8 +30,9 @@ io.on("connection", function(socket){
                 toSocket && toSocket.emit("message", getMsg(toContent, username));
 
             }else{
+                let savedMessage = await Message.create(getMsg(content, username));
                 // 公聊
-                io.emit("message", getMsg(content, username));
+                io.emit("message", savedMessage);
             }
         }else{
             /**
